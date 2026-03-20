@@ -1,0 +1,56 @@
+version: '3.8'
+
+networks:
+  yansir-network:
+    external: true
+
+services:
+
+  # ─── WhatsApp 网关服务 ───────────────────────────────────────────
+  waha:
+    image: devlikeapro/waha
+    container_name: waha
+    restart: unless-stopped
+    networks:
+      - yansir-network
+    ports:
+      - "3001:3000"
+    environment:
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+    volumes:
+      - waha_data:/app/.waha/media
+
+  # ─── AI 机器人管理后台 ────────────────────────────────────────────
+  bot-admin:
+    image: devlikeapro/whatsapp-bot-admin
+    container_name: bot-admin
+    restart: unless-stopped
+    networks:
+      - yansir-network
+    ports:
+      - "3000:3000"
+    environment:
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeme}
+      - WAHA_URL=http://waha:3000
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      - BOT_MODEL=${BOT_MODEL:-gpt-4-turbo}
+    volumes:
+      - bot_data:/app/data
+    depends_on:
+      - waha
+
+  # ─── 向量数据库（知识库支撑） ─────────────────────────────────────
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant
+    restart: unless-stopped
+    networks:
+      - yansir-network
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  waha_data:
+  bot_data:
+  qdrant_data:
