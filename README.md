@@ -1,4 +1,4 @@
-<img width="1600" height="529" alt="image" src="https://github.com/user-attachments/assets/c2c28fac-dab4-42c4-9993-4c5996f787cc" /># VPS 2.0版 WhatsApp 操作指南
+# VPS 2.0版 WhatsApp 操作指南
 
 ---
 
